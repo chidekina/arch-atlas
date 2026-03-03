@@ -192,7 +192,7 @@ function calcularDesconto(tipo: string, valor: number): number {
     if tipo == 'senior': return valor * 0.7
     # Cada novo tipo → modifica aqui
     return valor`,
-null)}
+undefined)}
 ${code(`// ✓ BOM — Strategy + polimorfismo
 interface DescontoStrategy {
   calcular(valor: number): number;
@@ -230,7 +230,7 @@ class DescontoEstudante(DescontoStrategy):
 class DescontoSenior(DescontoStrategy):
     def calcular(self, valor): return valor * 0.7
 
-# Adicionar novo tipo: só nova classe, zero modificação`,null)}
+# Adicionar novo tipo: só nova classe, zero modificação`,undefined)}
 ${quiz('Por que o OCP reduz riscos em produção?',
 ['Porque impede a criação de código duplicado',
 'Porque código existente (testado, em produção) não é modificado ao adicionar features — apenas novas classes são criadas',
@@ -273,7 +273,7 @@ class Retangulo:
 
 class Quadrado(Retangulo):  # Viola LSP
     def set_largura(self, l):
-        self.largura = self.altura = l  # Efeito colateral inesperado`,null)}
+        self.largura = self.altura = l  # Efeito colateral inesperado`,undefined)}
 ${code(`// ✓ BOM — composição e interface comum sem herança forçada
 interface Forma {
   area(): number;
@@ -306,7 +306,7 @@ class Retangulo(Forma):
 
 class Quadrado(Forma):
     def __init__(self, lado): self.lado = lado
-    def area(self): return self.lado ** 2`,null)}
+    def area(self): return self.lado ** 2`,undefined)}
 ${quiz('Qual é o sinal mais claro de violação do LSP?',
 ['A subclasse tem mais métodos que a classe pai',
 'Código que usa a classe pai precisa checar com instanceof/typeof antes de chamar um método',
@@ -342,7 +342,7 @@ class Trabalhador(ABC):
     @abstractmethod
     def comer(self): ...    # Robô não come
     @abstractmethod
-    def dormir(self): ...   # Robô não dorme`,null)}
+    def dormir(self): ...   # Robô não dorme`,undefined)}
 ${code(`// ✓ BOM — interfaces segregadas e focadas
 interface Trabalhavel { trabalhar(): void; }
 interface Alimentavel { comer(): void; }
@@ -374,7 +374,7 @@ class Humano(Trabalhavel, Alimentavel):
     def comer(self): print('comendo')
 
 class Robo(Trabalhavel):
-    def trabalhar(self): print('beep boop')`,null)}
+    def trabalhar(self): print('beep boop')`,undefined)}
 ${quiz('Qual o principal benefício do ISP na prática?',
 ['Reduz o número total de interfaces no sistema',
 'Módulos só dependem do que realmente precisam — mudanças em funcionalidades não usadas não causam recompilação ou quebra',
@@ -411,7 +411,7 @@ class OrderService:
         self.db = MySQLDatabase()  # Acoplamento direto
 
     def create_order(self, order):
-        self.db.save(order)`,null)}
+        self.db.save(order)`,undefined)}
 ${code(`// ✓ BOM — ambos dependem da abstração (interface)
 interface OrderRepository {
   save(order: Order): Promise<void>;
@@ -456,7 +456,7 @@ class MySQLOrderRepository(OrderRepository):
 
 class InMemoryOrderRepository(OrderRepository):
     def __init__(self): self.orders = []
-    async def save(self, order): self.orders.append(order)`,null)}
+    async def save(self, order): self.orders.append(order)`,undefined)}
 ${quiz('Qual é a relação entre DIP e testabilidade?',
 ['Nenhuma — testes são uma preocupação separada',
 'DIP torna o código mais difícil de testar por adicionar mais abstrações',
@@ -504,7 +504,7 @@ def registrar(email):
 
 def atualizar_email(email):
     if '@' not in email or len(email) < 5:  # mesma regra
-        raise ValueError('Email inválido')`,null)}
+        raise ValueError('Email inválido')`,undefined)}
 ${code(`// ✓ BOM — conhecimento centralizado
 function isEmailValido(email: string): boolean {
   return email.includes('@') && email.length >= 5;
@@ -530,7 +530,7 @@ class Email:
             raise ValueError('Email inválido')
         self.value = raw.lower()
 
-    def __str__(self): return self.value`,null)}
+    def __str__(self): return self.value`,undefined)}
 ${quiz('Qual cenário é uma violação do DRY?',
 ['Dois controllers com métodos chamados "create" que fazem coisas diferentes',
 'A mesma regra de validação de CPF implementada independentemente em 4 módulos do sistema',
@@ -589,7 +589,7 @@ order.getCustomerTheme();`,
 user.get_address().get_city().get_postal_code().get_prefix()
 
 # ✓ BOM
-user.get_postal_code_prefix()  # delegação interna`,null)}
+user.get_postal_code_prefix()  # delegação interna`,undefined)}
 ${quiz('Qual é o principal risco do "train wreck" (a.b.c.d)?',
 ['O código fica mais lento por criar muitos objetos intermediários',
 'Você acopla sua classe a toda a cadeia de dependências — se Address mudar sua estrutura interna, código em UserController quebra',
@@ -628,7 +628,7 @@ def pop(self):
 
 # ✓ BOM
 def peek(self): return self.items[-1]  # só query
-def pop(self): self.items.pop()        # só command`,null)}
+def pop(self): self.items.pop()        # só command`,undefined)}
 <h2>Separation of Concerns (SoC)</h2>
 <div class="pbox"><div class="pbox-name">SoC</div><div class="pbox-def">Partes do sistema que lidam com <strong>preocupações diferentes</strong> devem ser separadas. Cada parte deve endereçar uma, e apenas uma, preocupação.</div></div>
 <p>SoC é o princípio que justifica a existência de camadas (UI, lógica, dados), de módulos separados (auth, billing, notification), e de microservices.</p>
@@ -725,7 +725,7 @@ class NotificacaoService(ABC):
         notif.enviar(msg)
 
 class EmailService(NotificacaoService):
-    def criar_notificacao(self): return NotificacaoEmail()`,null)}
+    def criar_notificacao(self): return NotificacaoEmail()`,undefined)}
 <h2>Quando usar</h2>
 <ul>
 <li>Quando o tipo exato do objeto a criar não é conhecido até runtime</li>
@@ -814,7 +814,7 @@ class PizzaBuilder:
     def borda_recheada(self, r): self._borda = r; return self
 
     def build(self):
-        return Pizza(self._tamanho, self._sabor, self._queijo, True, self._borda)`,null)}
+        return Pizza(self._tamanho, self._sabor, self._queijo, True, self._borda)`,undefined)}
 ${quiz('Qual é o principal benefício do método build() no final da cadeia Builder?',
 ['Faz a validação e pode lançar exceção se o objeto estiver em estado inválido',
 'Apenas converte o Builder em outro tipo',
@@ -893,7 +893,7 @@ console.log(db === db2); // true — mesma instância`,
 
 db1 = DatabaseConnection()
 db2 = DatabaseConnection()
-print(db1 is db2)  # True`,null)}
+print(db1 is db2)  # True`,undefined)}
 <h2>Quando usar (raramente)</h2>
 <ul><li>Logger global único</li><li>Pool de conexões com banco</li><li>Cache de configuração lida uma vez</li></ul>
 <h2>Alternativas melhores</h2>
@@ -950,7 +950,7 @@ class Personagem:
 
 heroi = Personagem('Arquiteto', 100, ['SOLID', 'DDD'])
 clone = heroi.clone()
-clone.nome = 'Clone'  # heroi.nome intocado`,null)}
+clone.nome = 'Clone'  # heroi.nome intocado`,undefined)}
 <h2>Abstract Factory</h2>
 <div class="ph"><div class="pic">🏗️</div><div class="pm">
 <div class="pcat">GoF Criacional · 5/5</div>
@@ -988,7 +988,7 @@ class WinUIFactory implements UIFactory {
 function renderApp(factory: UIFactory) {
   factory.createButton().render();
   factory.createCheckbox().render();
-}`,null,null)}
+}`,undefined,undefined)}
 ${quiz('Qual é a diferença principal entre Factory Method e Abstract Factory?',
 ['Abstract Factory é mais moderno e substitui Factory Method',
 'Factory Method cria um produto usando herança. Abstract Factory cria famílias de produtos relacionados usando composição',
@@ -1047,7 +1047,7 @@ class PinoAdapter:
         self.pino.pino_log({'level': level, 'message': msg})
 
     def error(self, msg):
-        self.pino.pino_error({'err': msg})`,null)}
+        self.pino.pino_error({'err': msg})`,undefined)}
 <h2>Facade</h2>
 <div class="ph"><div class="pic">🏛️</div><div class="pm">
 <div class="pcat">GoF Estrutural · 2/7</div>
@@ -1080,7 +1080,7 @@ class VideoConverter {
 
 // Uso simples — cliente não sabe da complexidade
 const converter = new VideoConverter();
-converter.convert(file, 'mp4', 'output.mp4');`,null,null)}
+converter.convert(file, 'mp4', 'output.mp4');`,undefined,undefined)}
 ${quiz('Qual a diferença entre Adapter e Facade?',
 ['Adapter é para bibliotecas externas; Facade é para código interno',
 'Adapter converte uma interface existente em outra esperada. Facade cria uma interface nova e simplificada sobre um subsistema complexo',
@@ -1149,7 +1149,7 @@ class FileDataSource(DataSource):
 class CompressionDecorator(DataSource):
     def __init__(self, wrapped): self._w = wrapped
     def read(self): return f'[decompress] {self._w.read()}'
-    def write(self, data): self._w.write(f'[compress] {data}')`,null)}
+    def write(self, data): self._w.write(f'[compress] {data}')`,undefined)}
 <h2>Proxy</h2>
 <div class="ph"><div class="pic">🪞</div><div class="pm">
 <div class="pcat">GoF Estrutural · 4/7</div>
@@ -1185,7 +1185,7 @@ class CachedUserService implements UserService {
 }
 
 // Uso transparente — cliente não sabe se é real ou proxy
-const service: UserService = new CachedUserService(new RealUserService());`,null,null)}
+const service: UserService = new CachedUserService(new RealUserService());`,undefined,undefined)}
 ${quiz('Qual a diferença entre Proxy e Decorator?',
 ['São idênticos — apenas nomes diferentes',
 'Proxy controla acesso ao objeto original (lazy loading, cache, auth, logging) sem adicionar funcionalidades. Decorator adiciona comportamentos ao objeto sem alterar o acesso',
@@ -1232,7 +1232,7 @@ front.add(new Arquivo('App.tsx', 12));
 front.add(new Arquivo('index.css', 3));
 root.add(front);
 root.add(new Arquivo('README.md', 1));
-root.print(); // Trata Pasta e Arquivo uniformemente`,null,null)}
+root.print(); // Trata Pasta e Arquivo uniformemente`,undefined,undefined)}
 <h2>Bridge</h2>
 <div class="ph"><div class="pic">🌉</div><div class="pm">
 <div class="pcat">GoF Estrutural · 6/7</div>
@@ -1266,7 +1266,7 @@ class Circulo extends Forma {
 
 // Abstrações e implementações variam independentemente
 const circuloSVG = new Circulo(new SVGRenderer(), 50, 50, 20);
-const circuloCanvas = new Circulo(new CanvasRenderer(), 50, 50, 20);`,null,null)}
+const circuloCanvas = new Circulo(new CanvasRenderer(), 50, 50, 20);`,undefined,undefined)}
 ${quiz('Composite é mais adequado quando:',
 ['Você precisa adicionar comportamentos a objetos individualmente',
 'Você precisa tratar objetos individuais e grupos de objetos da mesma forma, como em uma estrutura de árvore',
@@ -1332,7 +1332,7 @@ svc.updateStatus('ORD-001', 'shipped'); // ambos são notificados`,
         for obs in self._observers: obs.update(event)
 
     def update_status(self, order_id, status):
-        self.notify({'order_id': order_id, 'status': status})`,null)}
+        self.notify({'order_id': order_id, 'status': status})`,undefined)}
 <h2>Strategy</h2>
 <div class="ph"><div class="pic">♟️</div><div class="pm">
 <div class="pcat">GoF Comportamental · 2/11</div>
@@ -1369,7 +1369,7 @@ sorter.sort([3,1,4,1,5,9]);
 
 // Muda estratégia em runtime
 sorter.setStrategy(new BubbleSort());
-sorter.sort([3,1,4,1,5,9]);`,null,null)}
+sorter.sort([3,1,4,1,5,9]);`,undefined,undefined)}
 ${playground(`// Strategy Pattern — algoritmos intercambiáveis
 const strategies = {
   bubble: arr => {
@@ -1486,7 +1486,7 @@ editor.insert('Hello ', 0);
 editor.insert('World', 6);
 console.log(editor.getText()); // "Hello World"
 editor.undoLast();
-console.log(editor.getText()); // "Hello "`,null,null)}
+console.log(editor.getText()); // "Hello "`,undefined,undefined)}
 <h2>Chain of Responsibility</h2>
 <div class="ph"><div class="pic">⛓️</div><div class="pm">
 <div class="pcat">GoF Comportamental · 4/11</div>
@@ -1535,7 +1535,7 @@ const route = new RouteHandler();
 auth.setNext(rateLimit).setNext(route);
 
 console.log(auth.handle({ method: 'GET', path: '/api', user: 'cesar' })); // 200 OK
-console.log(auth.handle({ method: 'GET', path: '/api' }));                // 401`,null,null)}
+console.log(auth.handle({ method: 'GET', path: '/api' }));                // 401`,undefined,undefined)}
 ${quiz('Qual caso de uso real demonstra bem o padrão Chain of Responsibility?',
 ['Banco de dados com réplicas de leitura',
 'Sistema de middleware HTTP onde cada camada (auth, logging, rate limit, validation) decide se passa a requisição adiante ou responde ela mesma',
@@ -1587,7 +1587,7 @@ class Order {
   process() { this.state.process(this); }
   cancel() { this.state.cancel(this); }
   ship() { this.state.ship(this); }
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>Template Method</h2>
 <div class="ph"><div class="pic">📄</div><div class="pm">
 <div class="pcat">GoF Comportamental · 6/11</div>
@@ -1618,7 +1618,7 @@ class CSVReport extends RelatorioGenerator {
   protected generateHeader() { return 'id,nome,valor'; }
   protected generateBody(dados: any[]) { return dados.map(d => Object.values(d).join(',')).join('\n'); }
   protected generateFooter() { return ''; } // sobrescreve o hook
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>Outros Padrões Comportamentais</h2>
 <table><tr><th>Pattern</th><th>Intent</th><th>Uso típico</th></tr>
 <tr><td><strong>Iterator</strong></td><td>Percorrer uma coleção sem expor sua estrutura interna</td><td>for...of em JS, iteradores customizados</td></tr>
@@ -1712,7 +1712,7 @@ export class PrismaOrderRepository implements OrderRepository {
   constructor(private prisma: PrismaClient) {}
   async save(order: Order) { await this.prisma.order.create(/* ... */); }
   async findById(id: string) { /* ... */ return null; }
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>Hexagonal Architecture (Ports & Adapters)</h2>
 <div class="ph"><div class="pic">⬡</div><div class="pm">
 <div class="pcat">Ports & Adapters — Alistair Cockburn, 2005</div>
@@ -1798,7 +1798,7 @@ class GetOrderQuery {
     return this.readDb.findOne('order_views', { id: orderId });
     // Sem joins, sem ORM, só SQL/NoSQL rápido
   }
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>Event Sourcing</h2>
 <div class="ph"><div class="pic">📜</div><div class="pm">
 <div class="pcat">Arquitetural — frequentemente combinado com CQRS</div>
@@ -1835,7 +1835,7 @@ const currentState = events.reduce(applyEvent, {} as Account);
 // Time travel — estado em qualquer ponto no tempo
 const stateLastMonth = events
   .filter(e => e.timestamp <= lastMonth)
-  .reduce(applyEvent, {} as Account);`,null,null)}
+  .reduce(applyEvent, {} as Account);`,undefined,undefined)}
 ${quiz('Qual é o maior desafio de Event Sourcing em produção?',
 ['Performance de escrita, pois gravar eventos é lento',
 'Evolução do schema: quando a estrutura de um evento precisa mudar, você precisa de estratégias de upcasting/versioning porque eventos antigos já estão gravados e imutáveis',
@@ -2036,7 +2036,7 @@ class Money:
     def add(self, other: 'Money') -> 'Money':
         if self.currency != other.currency:
             raise ValueError('Moedas diferentes')
-        return Money(self.amount + other.amount, self.currency)`,null)}
+        return Money(self.amount + other.amount, self.currency)`,undefined)}
 <h2>Aggregates & Aggregate Root</h2>
 <p>Um <strong>Aggregate</strong> é um cluster de objetos de domínio tratados como uma unidade para fins de mudança de dados. O <strong>Aggregate Root</strong> é a única entidade acessível externamente — toda interação com o aggregate passa por ela.</p>
 ${diag(`  ┌─────────────────────────────────────────┐
@@ -2131,7 +2131,7 @@ class Order {
 // Outros BCs reagem aos eventos (via event bus)
 // Notification BC → envia email ao cliente
 // Analytics BC → atualiza métricas de fulfillment
-// Billing BC → marca pedido como faturado`,null,null)}
+// Billing BC → marca pedido como faturado`,undefined,undefined)}
 ${quiz('Por que usar Anti-Corruption Layer ao integrar com sistemas legados?',
 ['Para melhorar a performance da integração',
 'Para evitar que os conceitos ruins, naming inconsistente e modelo anêmico do sistema legado "vazem" para o core domain moderno — ACL traduz entre os dois mundos',
@@ -2196,7 +2196,7 @@ class ShippingOrderConsumer {
   async handle(event: OrderCreatedEvent) {
     await this.shippingService.scheduleDelivery(event.orderId, event.customerId);
   }
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>Circuit Breaker</h2>
 <p>Previne chamadas em cascata quando um serviço está falhando. Assim como um disjuntor elétrico, "abre" quando detecta falhas consecutivas e "fecha" após período de recuperação.</p>
 ${diag(`  Estados do Circuit Breaker:
@@ -2263,7 +2263,7 @@ class CreateOrderSaga {
     }
     // Se Shipping falhou, desfaz pagamento E inventário
   }
-}`,null,null)}
+}`,undefined,undefined)}
 <h2>API Gateway</h2>
 <p>Ponto de entrada único para todos os clientes externos. Responsabilidades: roteamento, autenticação, rate limiting, SSL termination, logging, transformação de protocolo.</p>
 ${diag(`  Mobile App ──┐
@@ -2285,7 +2285,7 @@ ${quiz('Por que transações compensatórias no Saga são diferentes de ROLLBACK
 ];
 
 // ─── NAV STRUCTURE ─────────────────────────────────────────
-const NAV_GROUPS = [
+export const NAV_GROUPS = [
   { label: 'Trilha', modules: ['fundamentos','solid','principios'] },
   { label: 'Design Patterns', modules: ['criacionais','estruturais','comportamentais'] },
   { label: 'Arquitetura', modules: ['arquiteturais','systemdesign','apidesign','ddd','microservices','observability'] },
