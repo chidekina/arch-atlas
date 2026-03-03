@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Architecture Atlas</title>
+<meta name="description" content="Guia interativo de arquitetura de software — Design Patterns GoF, SOLID, Clean Architecture, DDD, Microservices, System Design">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
 <style>
@@ -124,6 +125,7 @@ code{font-family:var(--fm);font-size:.83em;background:rgba(255,255,255,.06);padd
 .nbtn.primary{background:rgba(212,160,23,.1);border-color:rgba(212,160,23,.3);color:var(--gold)}
 .nbtn.primary:hover{background:rgba(212,160,23,.2)}
 .diag{background:#080C16;border:1px solid var(--brd);border-radius:7px;padding:16px;font-family:var(--fm);font-size:11.5px;color:#7DD3FC;white-space:pre;overflow-x:auto;margin:14px 0;line-height:1.5}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}html{scroll-behavior:smooth}
 table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
 th{text-align:left;padding:7px 11px;background:var(--bg2);color:var(--tm);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--brd)}
 td{padding:9px 11px;color:var(--t2);border-bottom:1px solid var(--brd);vertical-align:top}
@@ -157,7 +159,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="srch-wrap">
     <input class="srch" id="srch" type="text" placeholder="🔍  Buscar tópico..." autocomplete="off">
   </div>
-  <div id="nav"></div>
+  <div id="nav" role="navigation" aria-label="Módulos do curso"></div>
 </nav>
 
 <main id="main">
@@ -773,6 +775,29 @@ ${quiz('Qual cenário é uma violação do DRY?',
 'Uma função de 50 linhas que poderia ser dividida em 3 funções menores',
 'Usar a mesma biblioteca em dois projetos diferentes'],1,
 '✅ Quando a regra de validação de CPF muda (ex: nova regra da Receita Federal), você precisaria atualizar 4 lugares — e provavelmente esqueceria de um. Isso é conhecimento duplicado, a essência do problema que o DRY resolve.')}
+${playground(\`// DRY na prática — Value Object elimina duplicação
+class Email {
+  constructor(raw) {
+    if (!raw || !raw.includes('@') || raw.length < 5)
+      throw new Error('Email inválido: ' + raw);
+    this.value = raw.toLowerCase().trim();
+  }
+  toString() { return this.value; }
+  equals(other) { return this.value === other.value; }
+}
+
+// Mesma regra, zero duplicação
+try {
+  const e1 = new Email('CESAR@AETHOSTECH.COM.BR');
+  const e2 = new Email('cesar@aethostech.com.br');
+  console.log('Email válido:', e1.toString());
+  console.log('São iguais?', e1.equals(e2));
+
+  new Email('invalido'); // vai lançar exceção
+} catch(e) {
+  console.log('Erro capturado:', e.message);
+}
+\`, 'Tente criar um Email inválido!')}
 `},
 {id:'kiss',title:'KISS · YAGNI · LoD',level:'i',content:`
 <h1>KISS, YAGNI e Lei de Deméter</h1>
@@ -1034,6 +1059,36 @@ ${quiz('Qual é o principal benefício do método build() no final da cadeia Bui
 'É necessário por limitações das linguagens OOP',
 'Retorna uma cópia do builder para reuso'],0,
 '✅ O build() é o momento de validação e criação do objeto final. Ali você pode checar: "um pedido sem itens não pode ser criado", "uma pizza sem sabor é inválida". O Builder garante que o objeto final é sempre válido.')}
+${playground(\`// Builder Pattern — experimente construir uma pizza!
+class Pizza {
+  constructor(t, s, q, b) {
+    this.tamanho = t; this.sabor = s;
+    this.queijo = q; this.borda = b;
+  }
+  toString() {
+    return \\`Pizza \\${this.tamanho} de \\${this.sabor}\\${this.queijo?' com queijo':' sem queijo'}\\${this.borda?' borda '+this.borda:''}\\`;
+  }
+}
+
+class PizzaBuilder {
+  constructor() { this._t='media'; this._s='mussarela'; this._q=true; this._b=null; }
+  tamanho(t) { this._t=t; return this; }
+  sabor(s) { this._s=s; return this; }
+  semQueijo() { this._q=false; return this; }
+  bordaRecheada(r) { this._b=r; return this; }
+  build() { return new Pizza(this._t, this._s, this._q, this._b); }
+}
+
+const pizza = new PizzaBuilder()
+  .tamanho('grande')
+  .sabor('calabresa')
+  .semQueijo()
+  .bordaRecheada('catupiry')
+  .build();
+
+console.log(pizza.toString());
+console.log('Total de passos: 4 (sem constructor monstruoso!)');
+\`, 'Edite e clique Executar para experimentar')}
 `},
 {id:'singleton',title:'Singleton',level:'i',content:`
 <div class="ph"><div class="pic">💎</div><div class="pm">
@@ -1553,12 +1608,69 @@ sorter.sort([3,1,4,1,5,9]);
 // Muda estratégia em runtime
 sorter.setStrategy(new BubbleSort());
 sorter.sort([3,1,4,1,5,9]);`,null,null)}
+${playground(\`// Strategy Pattern — algoritmos intercambiáveis
+const strategies = {
+  bubble: arr => {
+    const a = [...arr];
+    for(let i=0;i<a.length;i++)
+      for(let j=0;j<a.length-i-1;j++)
+        if(a[j]>a[j+1])[a[j],a[j+1]]=[a[j+1],a[j]];
+    return a;
+  },
+  quick: arr => [...arr].sort((a,b)=>a-b),
+  reverse: arr => [...arr].sort((a,b)=>b-a),
+};
+
+class Sorter {
+  constructor(strategy) { this.strategy = strategy; }
+  setStrategy(s) { this.strategy = s; }
+  sort(data) { return this.strategy(data); }
+}
+
+const data = [3,1,4,1,5,9,2,6];
+const sorter = new Sorter(strategies.bubble);
+
+console.log('Bubble:', sorter.sort(data).join(', '));
+sorter.setStrategy(strategies.quick);
+console.log('Quick: ', sorter.sort(data).join(', '));
+sorter.setStrategy(strategies.reverse);
+console.log('Reverse:', sorter.sort(data).join(', '));
+\`, 'Adicione sua própria strategy!')}
 ${quiz('Qual problema Observer pode causar se não for bem gerenciado?',
 ['Performance ruim por usar polimorfismo',
 'Memory leaks — observers subscritos que não são removidos mantêm referências vivas, impedindo o garbage collector de liberar memória',
 'Stack overflow por notificações recursivas (em geral)',
 'Race conditions em JavaScript single-thread'],1,
 '✅ Memory leak é o problema clássico. Se um componente React, por exemplo, se inscreve em um EventEmitter no mount mas não cancela a subscrição no unmount, a referência ao componente fica viva mesmo após ser destruído. Sempre chame unsubscribe() no cleanup.')}
+${playground(\`// Observer Pattern — sistema de eventos
+class EventEmitter {
+  constructor() { this.observers = {}; }
+  on(event, fn) {
+    if (!this.observers[event]) this.observers[event] = [];
+    this.observers[event].push(fn);
+    return () => this.off(event, fn); // retorna unsubscribe
+  }
+  off(event, fn) {
+    this.observers[event] = (this.observers[event]||[]).filter(f=>f!==fn);
+  }
+  emit(event, data) {
+    (this.observers[event]||[]).forEach(fn => fn(data));
+  }
+}
+
+const bus = new EventEmitter();
+
+// Subscrever
+const unsub1 = bus.on('order.created', e => console.log('Email:', e.id));
+const unsub2 = bus.on('order.created', e => console.log('Audit:', e.id, e.total));
+
+bus.emit('order.created', { id: 'ORD-001', total: 250 });
+
+// Cancelar subscrição
+unsub1();
+bus.emit('order.created', { id: 'ORD-002', total: 180 });
+// Só o Audit recebe agora
+\`, 'Experimente adicionar mais observers!')}
 `},
 {id:'command-chain',title:'Command & Chain of Responsibility',level:'m',content:`
 <h1>Command & Chain of Responsibility</h1>
@@ -2414,7 +2526,7 @@ ${quiz('Por que transações compensatórias no Saga são diferentes de ROLLBACK
 const NAV_GROUPS = [
   { label: 'Trilha', modules: ['fundamentos','solid','principios'] },
   { label: 'Design Patterns', modules: ['criacionais','estruturais','comportamentais'] },
-  { label: 'Arquitetura', modules: ['arquiteturais','systemdesign','ddd','microservices'] },
+  { label: 'Arquitetura', modules: ['arquiteturais','systemdesign','apidesign','ddd','microservices','observability'] },
 ];
 
 // ─── STATE ─────────────────────────────────────────────────
@@ -2451,6 +2563,8 @@ function buildNav() {
         item.className = 'ni' + (currentModule===mid && currentSection===s.id ? ' active' : '');
         item.innerHTML = `<div class="ni-ic">${mod.emoji}</div><div class="ni-lb">${s.title}</div>${badge}${check}`;
         item.onclick = () => navigate(mid, s.id);
+        item.setAttribute('tabindex','0');
+        item.onkeydown = (e) => { if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate(mid,s.id);} };
         grpEl.appendChild(item);
       });
     });
@@ -2536,7 +2650,251 @@ function initCodeTabs() {
 function runPg(pgId) {
   const ed = document.getElementById(`${pgId}-ed`);
   const out = document.getElementById(`${pgId}-out`);
-  const logs = [];
+  const logs = [
+,{id:'apidesign',title:'System Design · API Design',emoji:'🌐',color:'#34D399',level:'s',
+ sections:[
+  {id:'api-rest-graphql',title:'REST, GraphQL & gRPC',level:'s',content:`
+<div class="ph"><div class="pic">🌐</div><div class="pm">
+<div class="pcat">System Design · API Design</div>
+<div class="pname">REST, GraphQL & gRPC</div>
+<div class="pint">Três paradigmas distintos para comunicação entre sistemas — cada um com trade-offs claros.</div>
+</div></div>
+<h2>REST</h2>
+<div class="pbox"><div class="pbox-name">REST — Representational State Transfer</div><div class="pbox-def">Arquitetura baseada em recursos expostos via URLs. Usa verbos HTTP (GET, POST, PUT, PATCH, DELETE) para operações. Stateless por design.</div></div>
+<table><tr><th>Verbo</th><th>Operação</th><th>Idempotente?</th></tr>
+<tr><td>GET</td><td>Leitura — nunca tem efeitos colaterais</td><td>✅ Sim</td></tr>
+<tr><td>POST</td><td>Criação — gera novo recurso</td><td>❌ Não</td></tr>
+<tr><td>PUT</td><td>Substituição completa do recurso</td><td>✅ Sim</td></tr>
+<tr><td>PATCH</td><td>Atualização parcial</td><td>⚠️ Depende</td></tr>
+<tr><td>DELETE</td><td>Remoção</td><td>✅ Sim</td></tr>
+</table>
+${code(`// Boas práticas REST
+// ✓ Recursos no plural, hierarquia clara
+GET    /api/orders              // lista pedidos
+POST   /api/orders              // cria pedido
+GET    /api/orders/:id          // busca pedido
+PATCH  /api/orders/:id          // atualiza parcialmente
+DELETE /api/orders/:id          // remove pedido
+GET    /api/orders/:id/items    // sub-recurso
+
+// ✓ Respostas HTTP semânticas
+// 200 OK, 201 Created, 204 No Content
+// 400 Bad Request, 401 Unauthorized, 403 Forbidden
+// 404 Not Found, 409 Conflict, 422 Unprocessable Entity
+// 429 Too Many Requests, 500 Internal Server Error
+
+// ✓ Versionamento na URL ou header
+GET /api/v1/orders
+// ou: Accept: application/vnd.api+json;version=2
+
+// Fastify example
+app.get('/api/orders/:id', {
+  schema: {
+    params: z.object({ id: z.string().uuid() }),
+    response: { 200: OrderSchema, 404: ErrorSchema }
+  }
+}, async (req, reply) => {
+  const order = await orderService.findById(req.params.id);
+  if (!order) return reply.code(404).send({ error: 'Order not found' });
+  return order;
+});`,
+`# REST com FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, UUID4
+
+app = FastAPI()
+
+@app.get("/api/orders/{order_id}", response_model=OrderResponse)
+async def get_order(order_id: UUID4):
+    order = await order_service.find_by_id(str(order_id))
+    if not order:
+        raise HTTPException(404, "Order not found")
+    return order`,null)}
+<h2>GraphQL</h2>
+<div class="pbox"><div class="pbox-name">GraphQL</div><div class="pbox-def">Linguagem de query para APIs. O cliente especifica exatamente quais dados quer — sem over-fetching nem under-fetching. Schema fortemente tipado.</div></div>
+${code(`// Schema GraphQL
+const typeDefs = gql\`
+  type Order {
+    id: ID!
+    status: OrderStatus!
+    customer: Customer!    # join automático
+    items: [OrderItem!]!
+    total: Float!
+    createdAt: DateTime!
+  }
+
+  type Query {
+    order(id: ID!): Order
+    orders(status: OrderStatus, limit: Int = 10): [Order!]!
+  }
+
+  type Mutation {
+    createOrder(input: CreateOrderInput!): Order!
+    updateOrderStatus(id: ID!, status: OrderStatus!): Order!
+  }
+
+  type Subscription {
+    orderStatusChanged(orderId: ID!): Order! # real-time
+  }
+\`;
+
+// Client escolhe exatamente o que quer — sem over-fetch
+// Query:
+// query GetOrder($id: ID!) {
+//   order(id: $id) {
+//     id
+//     status
+//     customer { name email }  ← só nome e email, não o objeto inteiro
+//     total
+//   }
+// }`,null,null)}
+<h2>gRPC</h2>
+<div class="pbox"><div class="pbox-name">gRPC</div><div class="pbox-def">Framework RPC de alta performance do Google. Usa Protocol Buffers (binário) em vez de JSON. Ideal para comunicação interna entre microservices.</div></div>
+${diag(`  REST:  HTTP/1.1 + JSON (texto)  → simples, universal
+  gRPC:  HTTP/2 + Protobuf (binário) → 5-10x mais rápido que REST
+  GraphQL: HTTP/1.1 + JSON          → flexibilidade de queries`)}
+<table><tr><th></th><th>REST</th><th>GraphQL</th><th>gRPC</th></tr>
+<tr><td>Performance</td><td>Boa</td><td>Boa</td><td>Excelente</td></tr>
+<tr><td>Flexibilidade</td><td>Média</td><td>Alta</td><td>Baixa</td></tr>
+<tr><td>Streaming</td><td>❌</td><td>Subscriptions</td><td>✅ nativo</td></tr>
+<tr><td>Browser</td><td>✅</td><td>✅</td><td>⚠️ via proxy</td></tr>
+<tr><td>Uso ideal</td><td>APIs públicas</td><td>BFF / mobile</td><td>Serviços internos</td></tr>
+</table>
+${quiz('Você está construindo um BFF (Backend for Frontend) para um app mobile que precisa de dados de 5 serviços diferentes. Qual protocolo é mais adequado?',
+['REST — é o mais simples e universal',
+'GraphQL — permite o mobile pedir exatamente os campos que precisa de múltiplas fontes em uma única query, eliminando over-fetching e múltiplos roundtrips',
+'gRPC — é o mais rápido',
+'WebSockets — para dados em tempo real'],1,
+'✅ GraphQL é perfeito para BFF mobile: em vez de 5 chamadas REST (uma por serviço) com dados extras que o mobile não usa, uma única query GraphQL retorna exatamente os campos necessários de todas as fontes. Isso reduz latência e uso de dados no mobile.')}
+`}
+]},
+
+{id:'observability',title:'Microservices · Observability',emoji:'🔭',color:'#818CF8',level:'s',
+ sections:[
+  {id:'tracing-logging',title:'Observability & Tracing',level:'s',content:`
+<div class="ph"><div class="pic">🔭</div><div class="pm">
+<div class="pcat">Microservices · Observability</div>
+<div class="pname">Observabilidade & Distributed Tracing</div>
+<div class="pint">Em microservices, um request percorre múltiplos serviços. Observabilidade é a capacidade de entender o que acontece sem precisar adivinhar.</div>
+</div></div>
+<div class="pbox"><div class="pbox-name">Os 3 Pilares da Observabilidade</div><div class="pbox-def"><strong>Logs</strong> — eventos discretos (o que aconteceu) · <strong>Métricas</strong> — agregações numéricas ao longo do tempo (quantos/quanto) · <strong>Traces</strong> — caminho de um request pelo sistema (onde gastou tempo)</div></div>
+<h2>Distributed Tracing</h2>
+<p>Quando um request atravessa 5 microservices, como você sabe qual deles causou a lentidão? Distributed tracing propaga um <code>traceId</code> por todos os serviços e reconstrói o caminho completo.</p>
+${diag(`  Request → API Gateway (10ms)
+              └── Order Service (45ms)
+                    ├── Inventory Service (8ms) ✅
+                    ├── Payment Service (320ms) ⚠️ ← gargalo!
+                    └── Notification Service (5ms)
+
+  Trace ID: a3f7b2c9-...
+  Total: 388ms — Payment Service = 82% do tempo`)}
+${code(`// OpenTelemetry — padrão aberto de instrumentação
+import { trace, context, propagation } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('order-service', '1.0.0');
+
+async function createOrder(req: Request) {
+  // Span representa uma unidade de trabalho
+  const span = tracer.startSpan('order.create', {
+    attributes: {
+      'order.customer_id': req.body.customerId,
+      'order.items_count': req.body.items.length,
+    }
+  });
+
+  return context.with(trace.setSpan(context.active(), span), async () => {
+    try {
+      // Child span para operação de banco
+      const dbSpan = tracer.startSpan('db.save_order');
+      await orderRepo.save(order);
+      dbSpan.end();
+
+      // Headers de propagação passam traceId para serviços downstream
+      const headers = {};
+      propagation.inject(context.active(), headers);
+      await paymentClient.charge(order, { headers }); // traceId propagado!
+
+      span.setStatus({ code: SpanStatusCode.OK });
+      return order;
+    } catch (e) {
+      span.recordException(e);
+      span.setStatus({ code: SpanStatusCode.ERROR });
+      throw e;
+    } finally {
+      span.end();
+    }
+  });
+}`,null,null)}
+<h2>Structured Logging</h2>
+${code(`// ✗ RUIM — texto livre, impossível de parsear
+console.log('User 123 created order 456 for $99.90 at ' + new Date());
+
+// ✓ BOM — JSON estruturado (Pino)
+logger.info({
+  event: 'order.created',
+  orderId: order.id,
+  customerId: order.customerId,
+  total: order.total,
+  traceId: span.spanContext().traceId,  // correlaciona com traces!
+  duration_ms: Date.now() - startTime,
+});
+// → {"level":"info","event":"order.created","orderId":"...","traceId":"a3f7b2c9",...}
+// Pode ser indexado, buscado, alertado automaticamente`,
+`import structlog
+
+logger = structlog.get_logger()
+
+logger.info("order.created",
+    order_id=order.id,
+    customer_id=order.customer_id,
+    total=order.total,
+    trace_id=get_current_trace_id()
+)`,null)}
+<h2>Health Checks & SLOs</h2>
+<table><tr><th>Conceito</th><th>Definição</th><th>Exemplo</th></tr>
+<tr><td><strong>SLI</strong> (Indicator)</td><td>Métrica que mede o que importa</td><td>% requests com latência &lt; 200ms</td></tr>
+<tr><td><strong>SLO</strong> (Objective)</td><td>Meta numérica para o SLI</td><td>99.5% dos requests &lt; 200ms por mês</td></tr>
+<tr><td><strong>SLA</strong> (Agreement)</td><td>Contrato com penalidades</td><td>99.9% uptime ou crédito ao cliente</td></tr>
+<tr><td><strong>Error Budget</strong></td><td>Margem de erro permitida pelo SLO</td><td>0.5% de falhas/mês = 3.6h de downtime</td></tr>
+</table>
+${code(`// Health check endpoint padrão
+app.get('/health', async (req, reply) => {
+  const checks = await Promise.allSettled([
+    db.query('SELECT 1'),                    // banco acessível?
+    redis.ping(),                            // cache acessível?
+    fetch('http://payment-svc/health'),      // dependência acessível?
+  ]);
+
+  const status = checks.every(c => c.status === 'fulfilled') ? 'healthy' : 'degraded';
+  const code = status === 'healthy' ? 200 : 503;
+
+  return reply.code(code).send({
+    status,
+    version: process.env.APP_VERSION,
+    timestamp: new Date().toISOString(),
+    checks: {
+      database: checks[0].status,
+      cache: checks[1].status,
+      payment: checks[2].status,
+    }
+  });
+});`,null,null)}
+<h2>Stack de Observabilidade</h2>
+<table><tr><th>Pilar</th><th>Open Source</th><th>Cloud</th></tr>
+<tr><td>Traces</td><td>Jaeger, Zipkin, Tempo</td><td>AWS X-Ray, Datadog APM</td></tr>
+<tr><td>Métricas</td><td>Prometheus + Grafana</td><td>CloudWatch, Datadog</td></tr>
+<tr><td>Logs</td><td>ELK Stack (Elasticsearch + Logstash + Kibana)</td><td>CloudWatch Logs, Datadog Logs</td></tr>
+<tr><td>Padrão</td><td colspan="2">OpenTelemetry — instrumentação vendor-neutral</td></tr>
+</table>
+${quiz('Qual é a diferença entre um log e um trace?',
+['São sinônimos — ambos registram o que aconteceu',
+'Log é um evento isolado em um serviço (o que aconteceu aqui). Trace é a história completa de um request através de múltiplos serviços (o que aconteceu em todo o sistema)',
+'Trace é mais detalhado que log, por isso é mais caro',
+'Logs são para produção; traces são só para debugging'],1,
+'✅ Log: "Payment Service processou pagamento X em 320ms." Trace: "Request do usuário passou por API Gateway → Order Service → Payment Service (320ms, gargalo!) → Notification Service, total 388ms." O trace correlaciona logs de vários serviços em uma única linha do tempo.')}
+`}
+]},
+];
   const origLog = console.log;
   console.log = (...args) => logs.push(args.map(String).join(' '));
   try {
