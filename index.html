@@ -37,8 +37,10 @@ body{font-family:var(--fs);background:var(--bg);color:var(--t1);display:flex;hei
 .b-i{background:rgba(96,165,250,.12);color:var(--blue)}
 .b-m{background:rgba(212,160,23,.12);color:var(--gold)}
 .b-s{background:rgba(167,139,250,.12);color:var(--purp)}
-.nck{width:13px;height:13px;border:1.5px solid var(--brd2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;flex-shrink:0}
+.nck{width:13px;height:13px;border:1.5px solid var(--brd2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;flex-shrink:0;cursor:pointer;transition:border-color .15s,background .15s}
+.nck:hover{border-color:var(--grn)}
 .nck.done{background:var(--grnd);border-color:var(--grnd);color:#fff}
+.nck.done:hover{background:var(--brd2);border-color:var(--brd2);color:transparent}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 #topbar{height:44px;min-height:44px;border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 24px;gap:12px}
 .bcrumb{font-size:12px;color:var(--tm);display:flex;align-items:center;gap:5px}
@@ -2597,11 +2599,19 @@ function buildNav() {
         const done = completed.has(mid + '/' + s.id);
         const lvlMap = {i:'i',m:'m',s:'s'};
         const badge = `<div class="nbadge b-${lvlMap[s.level]||'i'}">${s.level==='i'?'Init':s.level==='m'?'Mid':'Sênior'}</div>`;
-        const check = `<div class="nck${done?' done':''}">${done?'✓':''}</div>`;
+        const check = `<div class="nck${done?' done':''}" title="${done?'Desmarcar como concluído':'Marcar como concluído'}">${done?'✓':''}</div>`;
         const item = document.createElement('div');
         item.className = 'ni' + (currentModule===mid && currentSection===s.id ? ' active' : '');
         item.innerHTML = `<div class="ni-ic">${mod.emoji}</div><div class="ni-lb">${s.title}</div>${badge}${check}`;
         item.onclick = () => navigate(mid, s.id);
+        const key = mid + '/' + s.id;
+        item.querySelector('.nck').onclick = (e) => {
+          e.stopPropagation();
+          if (completed.has(key)) { completed.delete(key); } else { completed.add(key); }
+          saveProgress();
+          updateProgress();
+          buildNav();
+        };
         item.setAttribute('tabindex','0');
         item.onkeydown = (e) => { if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate(mid,s.id);} };
         grpEl.appendChild(item);
