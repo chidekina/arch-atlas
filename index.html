@@ -775,7 +775,7 @@ ${quiz('Qual cenário é uma violação do DRY?',
 'Uma função de 50 linhas que poderia ser dividida em 3 funções menores',
 'Usar a mesma biblioteca em dois projetos diferentes'],1,
 '✅ Quando a regra de validação de CPF muda (ex: nova regra da Receita Federal), você precisaria atualizar 4 lugares — e provavelmente esqueceria de um. Isso é conhecimento duplicado, a essência do problema que o DRY resolve.')}
-${playground(\`// DRY na prática — Value Object elimina duplicação
+${playground(`// DRY na prática — Value Object elimina duplicação
 class Email {
   constructor(raw) {
     if (!raw || !raw.includes('@') || raw.length < 5)
@@ -797,7 +797,7 @@ try {
 } catch(e) {
   console.log('Erro capturado:', e.message);
 }
-\`, 'Tente criar um Email inválido!')}
+`, 'Tente criar um Email inválido!')}
 `},
 {id:'kiss',title:'KISS · YAGNI · LoD',level:'i',content:`
 <h1>KISS, YAGNI e Lei de Deméter</h1>
@@ -1059,14 +1059,14 @@ ${quiz('Qual é o principal benefício do método build() no final da cadeia Bui
 'É necessário por limitações das linguagens OOP',
 'Retorna uma cópia do builder para reuso'],0,
 '✅ O build() é o momento de validação e criação do objeto final. Ali você pode checar: "um pedido sem itens não pode ser criado", "uma pizza sem sabor é inválida". O Builder garante que o objeto final é sempre válido.')}
-${playground(\`// Builder Pattern — experimente construir uma pizza!
+${playground(`// Builder Pattern — experimente construir uma pizza!
 class Pizza {
   constructor(t, s, q, b) {
     this.tamanho = t; this.sabor = s;
     this.queijo = q; this.borda = b;
   }
   toString() {
-    return \\`Pizza \\${this.tamanho} de \\${this.sabor}\\${this.queijo?' com queijo':' sem queijo'}\\${this.borda?' borda '+this.borda:''}\\`;
+    return \`Pizza \${this.tamanho} de \${this.sabor}\${this.queijo?' com queijo':' sem queijo'}\${this.borda?' borda '+this.borda:''}\`;
   }
 }
 
@@ -1088,7 +1088,7 @@ const pizza = new PizzaBuilder()
 
 console.log(pizza.toString());
 console.log('Total de passos: 4 (sem constructor monstruoso!)');
-\`, 'Edite e clique Executar para experimentar')}
+`, 'Edite e clique Executar para experimentar')}
 `},
 {id:'singleton',title:'Singleton',level:'i',content:`
 <div class="ph"><div class="pic">💎</div><div class="pm">
@@ -1608,7 +1608,7 @@ sorter.sort([3,1,4,1,5,9]);
 // Muda estratégia em runtime
 sorter.setStrategy(new BubbleSort());
 sorter.sort([3,1,4,1,5,9]);`,null,null)}
-${playground(\`// Strategy Pattern — algoritmos intercambiáveis
+${playground(`// Strategy Pattern — algoritmos intercambiáveis
 const strategies = {
   bubble: arr => {
     const a = [...arr];
@@ -1635,14 +1635,14 @@ sorter.setStrategy(strategies.quick);
 console.log('Quick: ', sorter.sort(data).join(', '));
 sorter.setStrategy(strategies.reverse);
 console.log('Reverse:', sorter.sort(data).join(', '));
-\`, 'Adicione sua própria strategy!')}
+`, 'Adicione sua própria strategy!')}
 ${quiz('Qual problema Observer pode causar se não for bem gerenciado?',
 ['Performance ruim por usar polimorfismo',
 'Memory leaks — observers subscritos que não são removidos mantêm referências vivas, impedindo o garbage collector de liberar memória',
 'Stack overflow por notificações recursivas (em geral)',
 'Race conditions em JavaScript single-thread'],1,
 '✅ Memory leak é o problema clássico. Se um componente React, por exemplo, se inscreve em um EventEmitter no mount mas não cancela a subscrição no unmount, a referência ao componente fica viva mesmo após ser destruído. Sempre chame unsubscribe() no cleanup.')}
-${playground(\`// Observer Pattern — sistema de eventos
+${playground(`// Observer Pattern — sistema de eventos
 class EventEmitter {
   constructor() { this.observers = {}; }
   on(event, fn) {
@@ -1670,7 +1670,7 @@ bus.emit('order.created', { id: 'ORD-001', total: 250 });
 unsub1();
 bus.emit('order.created', { id: 'ORD-002', total: 180 });
 // Só o Audit recebe agora
-\`, 'Experimente adicionar mais observers!')}
+`, 'Experimente adicionar mais observers!')}
 `},
 {id:'command-chain',title:'Command & Chain of Responsibility',level:'m',content:`
 <h1>Command & Chain of Responsibility</h1>
