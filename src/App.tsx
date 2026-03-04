@@ -78,6 +78,7 @@ export default function App() {
           progressPct={progressPct}
           onNavigate={handleNavigate}
           onToggle={toggle}
+          onHome={handleHome}
         />
       </nav>
 

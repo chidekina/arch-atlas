@@ -12,6 +12,7 @@ interface SidebarProps {
   progressPct: number
   onNavigate: (modId: string, sectionId: string) => void
   onToggle: (key: string) => void
+  onHome: () => void
 }
 
 export function Sidebar({
@@ -21,6 +22,7 @@ export function Sidebar({
   progressPct,
   onNavigate,
   onToggle,
+  onHome,
 }: SidebarProps) {
   const [query, setQuery] = useState('')
 
@@ -38,7 +40,11 @@ export function Sidebar({
 
   return (
     <>
-      <div style={{ padding: '18px 16px 14px', borderBottom: '1px solid var(--brd)' }}>
+      <div
+        style={{ padding: '18px 16px 14px', borderBottom: '1px solid var(--brd)', cursor: 'pointer' }}
+        onClick={onHome}
+        title="Voltar para o início"
+      >
         <div className="logo">◈ Architecture</div>
         <div className="ltitle">Atlas</div>
         <div className="lsub">Guia de Arquitetura de Software</div>
