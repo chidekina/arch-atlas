@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <div
-      className="flex overflow-hidden"
+      className="flex overflow-hidden w-full"
       style={{
         height: '100vh',
         background: 'var(--bg)',
