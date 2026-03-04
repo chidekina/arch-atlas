@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useProgress } from '@/hooks/useProgress'
 import { useNavigation } from '@/hooks/useNavigation'
 import { Sidebar } from '@/components/layout/Sidebar'
@@ -21,13 +21,10 @@ export default function App() {
     showHome,
   } = useNavigation()
 
-  // Auto-mark section as done after 3s
-  useEffect(() => {
+  const handleMarkDone = () => {
     if (!currentModule || !currentSection) return
-    const key = `${currentModule}/${currentSection}`
-    const t = setTimeout(() => markDone(key), 3000)
-    return () => clearTimeout(t)
-  }, [currentModule, currentSection, markDone])
+    markDone(`${currentModule}/${currentSection}`)
+  }
 
   const handleNavigate = (modId: string, secId: string) => {
     navigate(modId, secId)
@@ -96,6 +93,7 @@ export default function App() {
             section={currentSec}
             onPrev={prevSection ? () => navigate(prevSection.mid, prevSection.sid) : null}
             onNext={nextSection ? () => navigate(nextSection.mid, nextSection.sid) : null}
+            onAllAnswered={handleMarkDone}
           />
         ) : (
           <WelcomeScreen onNavigate={navigate} completed={completed} />

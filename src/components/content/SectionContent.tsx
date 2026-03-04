@@ -16,10 +16,12 @@ interface SectionContentProps {
   section: Section
   onPrev: (() => void) | null
   onNext: (() => void) | null
+  onAllAnswered?: () => void
 }
 
-export function SectionContent({ section, onPrev, onNext }: SectionContentProps) {
+export function SectionContent({ section, onPrev, onNext, onAllAnswered }: SectionContentProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const [answeredCount, setAnsweredCount] = useState(0)
   const [totalQuizzes, setTotalQuizzes] = useState(0)
 
@@ -74,10 +76,19 @@ export function SectionContent({ section, onPrev, onNext }: SectionContentProps)
   useEffect(() => {
     setAnsweredCount(0)
     containerRef.current?.scrollTo(0, 0)
+    if (contentRef.current) {
+      contentRef.current.innerHTML = section.content
+    }
     if (window.Prism) window.Prism.highlightAll()
-    const quizzes = document.querySelectorAll('#section-content .quiz-opts')
+    const quizzes = contentRef.current?.querySelectorAll('.quiz-opts') ?? []
     setTotalQuizzes(quizzes.length)
   }, [section.id])
+
+  useEffect(() => {
+    if (totalQuizzes > 0 && answeredCount >= totalQuizzes) {
+      onAllAnswered?.()
+    }
+  }, [answeredCount, totalQuizzes, onAllAnswered])
 
   const nextLocked = totalQuizzes > 0 && answeredCount < totalQuizzes
 
@@ -88,7 +99,7 @@ export function SectionContent({ section, onPrev, onNext }: SectionContentProps)
       className="flex-1 overflow-y-auto px-9 py-7 w-full section-fade"
       style={{ paddingBottom: 'max(80px, env(safe-area-inset-bottom, 0px))' }}
     >
-      <div dangerouslySetInnerHTML={{ __html: section.content }} />
+      <div ref={contentRef} />
       <NavButtons onPrev={onPrev} onNext={onNext} nextLocked={nextLocked} />
     </div>
   )
