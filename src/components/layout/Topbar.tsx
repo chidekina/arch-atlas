@@ -2,7 +2,7 @@
 import { Menu } from 'lucide-react'
 
 interface TopbarProps {
-  currentTitle: string
+  currentTitle: string | null
   currentLevel: number
   onToggleSidebar: () => void
   onHome: () => void
@@ -27,8 +27,12 @@ export function Topbar({ currentTitle, currentLevel, onToggleSidebar, onHome }: 
         >
           Architecture Atlas
         </button>
-        <span className="sep">›</span>
-        <span>{currentTitle}</span>
+        {currentTitle && (
+          <>
+            <span className="sep">›</span>
+            <span>{currentTitle}</span>
+          </>
+        )}
       </div>
       <div className="lvl-ind">
         {[1, 2, 3].map(i => (

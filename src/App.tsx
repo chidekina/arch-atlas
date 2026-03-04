@@ -84,7 +84,7 @@ export default function App() {
       {/* Main */}
       <main className="flex-1 flex flex-col overflow-hidden">
         <Topbar
-          currentTitle={currentSec?.title ?? 'Início'}
+          currentTitle={currentSec?.title ?? null}
           currentLevel={currentLevel}
           onToggleSidebar={() => setSidebarOpen(o => !o)}
           onHome={handleHome}
