@@ -7,7 +7,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
   return (
-    <div className="flex-1 overflow-y-auto px-9 py-7 w-full">
+    <div id="content" className="flex-1 overflow-y-auto w-full">
       <div className="welcome-label">Bem-vindo ao</div>
       <h1 className="welcome-title">Architecture Atlas</h1>
       <p className="lead">
@@ -20,7 +20,7 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
       >
         Começar →
       </button>
-      <div className="divider" style={{ margin: '32px 0' }} />
+      <div className="divider" />
       <div className="hgrid">
         {MODULES.map(m => (
           <div

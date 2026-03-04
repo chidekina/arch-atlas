@@ -34,6 +34,11 @@ export default function App() {
     setSidebarOpen(false)
   }
 
+  const handleHome = () => {
+    showHome()
+    setSidebarOpen(false)
+  }
+
   return (
     <div
       className="flex overflow-hidden"
@@ -82,7 +87,7 @@ export default function App() {
           currentTitle={currentSec?.title ?? 'Início'}
           currentLevel={currentLevel}
           onToggleSidebar={() => setSidebarOpen(o => !o)}
-          onHome={showHome}
+          onHome={handleHome}
         />
         {currentSec ? (
           <SectionContent

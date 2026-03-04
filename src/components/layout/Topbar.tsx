@@ -10,10 +10,7 @@ interface TopbarProps {
 
 export function Topbar({ currentTitle, currentLevel, onToggleSidebar, onHome }: TopbarProps) {
   return (
-    <div
-      style={{ height: '44px', minHeight: '44px', borderBottom: '1px solid var(--brd)' }}
-      className="flex items-center px-6 gap-3"
-    >
+    <div id="topbar" className="flex items-center px-6 gap-3">
       <button
         className="md:hidden bg-transparent border-none text-[var(--t1)] cursor-pointer p-1 text-lg leading-none"
         onClick={onToggleSidebar}
@@ -21,31 +18,21 @@ export function Topbar({ currentTitle, currentLevel, onToggleSidebar, onHome }: 
       >
         <Menu size={18} />
       </button>
-      <div className="text-xs flex items-center gap-1.5" style={{ color: 'var(--tm)' }}>
-        <span
-          className="cursor-pointer transition-colors"
-          style={{ color: 'var(--t2)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--t2)')}
+      <div className="bcrumb">
+        <button
+          type="button"
+          className="cursor-pointer transition-colors text-[var(--t2)] hover:text-[var(--gold)] bg-transparent border-none p-0"
           onClick={onHome}
+          aria-label="Voltar para a tela inicial"
         >
           Architecture Atlas
-        </span>
-        <span style={{ color: 'var(--brd2)' }}>›</span>
-        <span style={{ color: 'var(--t2)' }}>{currentTitle}</span>
+        </button>
+        <span className="sep">›</span>
+        <span>{currentTitle}</span>
       </div>
-      <div className="ml-auto flex items-center gap-1">
+      <div className="lvl-ind">
         {[1, 2, 3].map(i => (
-          <div
-            key={i}
-            style={{
-              width: '7px',
-              height: '7px',
-              borderRadius: '50%',
-              background: i <= currentLevel ? 'var(--gold)' : 'var(--brd2)',
-            }}
-            title={i === 1 ? 'Iniciante' : i === 2 ? 'Intermediário' : 'Sênior'}
-          />
+          <div key={i} className={`lvl-dot${i <= currentLevel ? ' a' : ''}`} title={i === 1 ? 'Iniciante' : i === 2 ? 'Intermediário' : 'Sênior'} />
         ))}
       </div>
     </div>
