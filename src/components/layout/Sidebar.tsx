@@ -77,6 +77,9 @@ export function Sidebar({
         aria-label="Módulos do curso"
       >
         {filtered ? (
+          filtered.length === 0 ? (
+            <div className="srch-empty">Nenhum tópico encontrado para "{query}"</div>
+          ) : (
           filtered.map(({ mod, sec }) => (
             <div
               key={`${mod.id}/${sec.id}`}
@@ -87,6 +90,7 @@ export function Sidebar({
               <div className="ni-lb">{sec.title}</div>
             </div>
           ))
+          )
         ) : (
           MODULES.map(mod => (
             <div key={mod.id}>

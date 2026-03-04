@@ -35,8 +35,13 @@ export function Topbar({ currentTitle, currentLevel, onToggleSidebar, onHome }: 
         )}
       </div>
       <div className="lvl-ind">
+        {currentLevel > 0 && (
+          <span className="lvl-label">
+            {currentLevel === 1 ? 'Iniciante' : currentLevel === 2 ? 'Intermediário' : 'Sênior'}
+          </span>
+        )}
         {[1, 2, 3].map(i => (
-          <div key={i} className={`lvl-dot${i <= currentLevel ? ' a' : ''}`} title={i === 1 ? 'Iniciante' : i === 2 ? 'Intermediário' : 'Sênior'} />
+          <div key={i} className={`lvl-dot${i <= currentLevel ? ' a' : ''}`} />
         ))}
       </div>
     </div>

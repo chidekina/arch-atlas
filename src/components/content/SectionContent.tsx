@@ -85,7 +85,7 @@ export function SectionContent({ section, onPrev, onNext }: SectionContentProps)
     <div
       id="section-content"
       ref={containerRef}
-      className="flex-1 overflow-y-auto px-9 py-7 w-full"
+      className="flex-1 overflow-y-auto px-9 py-7 w-full section-fade"
       style={{ paddingBottom: 'max(80px, env(safe-area-inset-bottom, 0px))' }}
     >
       <div dangerouslySetInnerHTML={{ __html: section.content }} />

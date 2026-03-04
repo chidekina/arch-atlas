@@ -11,15 +11,19 @@ export function NavButtons({ onPrev, onNext, nextLocked }: NavButtonsProps) {
       <button className="nbtn" disabled={!onPrev} onClick={onPrev ?? undefined}>
         ← Anterior
       </button>
-      <button
-        id="btn-next"
-        className="nbtn primary"
-        disabled={!onNext || nextLocked}
-        title={nextLocked ? 'Responda o(s) quiz desta seção para continuar' : undefined}
-        onClick={onNext ?? undefined}
-      >
-        Próximo →
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+        {nextLocked && (
+          <span className="next-hint">Responda o quiz para continuar</span>
+        )}
+        <button
+          id="btn-next"
+          className="nbtn primary"
+          disabled={!onNext || nextLocked}
+          onClick={onNext ?? undefined}
+        >
+          Próximo →
+        </button>
+      </div>
     </div>
   )
 }

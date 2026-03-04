@@ -92,12 +92,13 @@ export default function App() {
         />
         {currentSec ? (
           <SectionContent
+            key={currentSec.id}
             section={currentSec}
             onPrev={prevSection ? () => navigate(prevSection.mid, prevSection.sid) : null}
             onNext={nextSection ? () => navigate(nextSection.mid, nextSection.sid) : null}
           />
         ) : (
-          <WelcomeScreen onNavigate={navigate} />
+          <WelcomeScreen onNavigate={navigate} completed={completed} />
         )}
       </main>
     </div>
